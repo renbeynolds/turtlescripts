@@ -1,0 +1,121 @@
+function updateLocation()
+  if dir == "north" then
+    z = z + 1
+  elseif dir == "south" then
+    z = z - 1
+  elseif dir == "east" then
+    x = x + 1
+  elseif dir == "west" then
+    x = x - 1
+  end
+end -- updateLocation
+
+function right()
+  turtle.turnRight()
+  if dir == "north" then
+    dir = "east"
+  elseif dir == "east" then
+    dir = "south"
+  elseif dir == "south" then
+    dir = "west"
+  elseif dir == "west" then
+    dir = "north"
+  end
+end -- right
+
+function left()
+  turtle.turnLeft()
+  if dir == "north" then
+    dir = "west"
+  elseif dir == "west" then
+    dir = "south"
+  elseif dir == "south" then
+    dir = "east"
+  elseif dir == "east" then
+    dir = "north"
+  end
+end -- right
+
+function forward()
+  while not turtle.forward() do
+    turtle.dig()
+  end
+  updateLocation()
+end -- forward
+
+function up()
+  while not turtle.up() do
+    turtle.digUp()
+  end
+  y = y + 1
+end -- up
+
+function down()
+  while not turtle.down() do
+    turtle.digDown()
+  end
+  y = y - 1
+end -- down
+
+function mineRow()
+  if width > 1 then
+    if x == 1 then
+      right()
+      while x < width do
+        forward()
+      end
+      left()
+    else
+      left()
+      while x > 1 do
+        forward()
+      end
+      right()
+    end
+  end
+end -- row
+
+function mineCrossSection()
+  mineRow()
+  if y == 1 then
+    while y < height do
+      up()
+      mineRow()
+    end
+  else
+    while y > 1 do
+      down()
+      mineRow()
+    end
+  end
+end -- mineCrossSection()
+
+function main(args)
+
+  if #args ~= 3 then
+    print( "Usage: mytunnel <width> <height> <length>" )
+    error()
+  end
+  
+  width  = tonumber(args[1])
+  height = tonumber(args[2])
+  length = tonumber(args[3])
+  
+  x = 1
+  y = 1
+  z = 0
+  dir = "north"
+
+  while z < length do
+    forward()
+    mineCrossSection()
+  end
+
+  while y > 1 do
+    down()
+  end
+
+end -- main
+
+args = { ... }
+main(args)
